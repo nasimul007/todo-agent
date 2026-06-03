@@ -1,9 +1,10 @@
-from todo_app import test_ollama
+from agent import TodoAgent
 
 
-def main():
-    test_ollama()
+agent = TodoAgent()
 
+while True:
+    user_input = input(">> ")
+    result = agent.think(user_input)
 
-if __name__ == "__main__":
-    main()
+    print("Result:", result)
