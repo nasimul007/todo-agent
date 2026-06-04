@@ -1,12 +1,14 @@
 import json
+import os
 from typing import Any
 
 from ollama import chat
+from openai import OpenAI
 
 from services.todo_service import TodoService
 
 
-MODEL = "phi4-mini:latest"
+API_KEY = os.getenv("GEMINI_API_KEY")
 
 
 def create_todo(title: str, description: str = "", priority: int = 3) -> str:
@@ -230,11 +232,25 @@ class TodoAgent:
             },
         ]
 
-        response = chat(
-            model=MODEL,
-            messages=messages,
-            tools=TOOLS,
+        # response = chat(
+        #     model=MODEL,
+        #     messages=messages,
+        #     tools=TOOLS,
+        # )
+
+        client = OpenAI(
+            # This is the default and can be omitted
+    
+            api_key = API_KEY,
+            base_url = os.getenv("GOOGLE_API_URL")
         )
+
+        completion = client.chat.completions.parse(
+            model=os.getenv("LLM_MODEL"),
+            messages=messages,
+        )
+
+        print(completion.choices[0].message.content)
 
         tool_calls = _get_tool_calls(response.message)
 
@@ -272,7 +288,7 @@ class TodoAgent:
         )
 
         final_response = chat(
-            model=MODEL,
+            model=os.getenv("LLM_MODEL"),
             messages=messages,
         )
 
